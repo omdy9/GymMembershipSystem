@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General styles for the page */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 110px 0 0 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+  /* Navbar styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  padding-top: 20px;
+  text-align: center;
+  transform: translateX(-250px); /* Initially collapsed */
+  transition: transform 0.3s ease-in-out;
+  z-index: 1000; /* Ensure navbar stays on top */
+}
+
+.navbar a {
+  display: block;
+  padding: 15px;
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  margin: 10px 0;
+  transition: background-color 0.3s;
+}
+
+.navbar a:hover {
+  background-color: #575757;
+}
+
+/* Main content area */
+.main-content {
+  margin-left: 0;  /* Initially no margin */
+  padding: 20px;
+  transition: margin-left 0.3s ease-in-out;
+  margin-top: 60px; /* Added margin to ensure the content doesn't get hidden behind the navbar */
+  z-index: 0; /* Make sure content is behind navbar */
+}
+
+/* When navbar is expanded */
+.main-content.shifted {
+  margin-left: 250px;  /* Shift the main content to the right when the navbar expands */
+}
+
+/* Hamburger icon */
+.hamburger {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+  z-index: 1001; /* Ensure hamburger icon is on top */
+}
+
+
+
+    /* Slideshow styles */
+    .slideshow-container {
+      max-width: 90%; 
+      margin: 50px auto;
+      text-align: center;
+    }
+
+    .mySlides {
+      display: none;
+      width: 100%;
+      height: fit-content;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    /* Container styles for sections */
+    .container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+    }
+
+    .container .card {
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 8px;
+      width: 23%;
+      padding: 20px;
+      text-align: center;
+      color: white;
+    }
+
+    .card h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .card p {
+      font-size: 18px;
+    }
+
+    .about-us {
+      padding: 50px 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      font-family: 'Times New Roman';
+      color: white;
+      text-align: center;
+    }
+
+    .about-us h2 {
+      font-family: 'Times New Roman';
+      color: rgb(255, 255, 255);
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .about-us p {
+        color:rgb(255, 0, 0);   
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .attendance-buttons {
+  padding-top: 1000px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.attendance-buttons .btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4CAF50;
+  color: white;
+  transition: background-color 0.3s ease;
+  flex: 1 1 auto;
+  max-width: 150px;
+}
+
+.attendance-buttons .btn:hover {
+  background-color: #45a049;
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  z-index: 1;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+}
+
+.dropdown-content .calendar-container {
+  color: black;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.calendar-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.calendar {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.present {
+  background-color: #4CAF50;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.absent {
+  background-color: #f44336;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+}
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger icon -->
+  <div class="hamburger" onclick="toggleNavbar()">&#9776;</div>
+
+  <!-- Side Navbar -->
+  <div class="navbar">
+    <a href="home.html">Home</a>
+    <a href="exercise.html">Exercise</a>
+    <a href="profile.html">Profile</a>
+    <a href="diet.html">Diet</a>
+    <a href="membership.html">Membership</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Logo at the top center -->
+    <div class="logo-container">
+      <a href="home.html">
+        <img src="images/Logo1.png" alt="Logo" class="logo-img">
+      </a>
+    </div>
+
+    <!-- Attendance Buttons Below the Logo -->
+    <div class="attendance-buttons">
+        <button class="btn" id="clockButton" onclick="toggleClock()">Clock In</button>
+      
+        <!-- Dropdown Button for View Attendance -->
+        <div class="dropdown">
+          <button class="btn" onclick="toggleDropdown()">View Attendance</button>
+          <div class="dropdown-content" id="attendanceDropdown">
+            <div class="calendar-container" id="calendarContainer">
+              <h2>Attendance Calendar</h2>
+              <div class="calendar" id="calendar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- Slideshow -->
+    <div class="slideshow-container">
+      <img class="mySlides" src="images/silde1.jpeg" alt="Slide 1">
+      <img class="mySlides" src="images/slide2.jpeg" alt="Slide 2">
+      <img class="mySlides" src="images/slide3.png" alt="Slide 3">
+    </div>
+
+    <!-- Containers for different sections -->
+    <div class="container">
+      <div class="card">
+        <h2>Exercise</h2>
+        <p>Explore our exercise plans tailored for your fitness goals.</p>
+      </div>
+      <div class="card">
+        <h2>Profile</h2>
+        <p>Manage your profile and track your progress.</p>
+      </div>
+      <div class="card">
+        <h2>Diet</h2>
+        <p>Get personalized diet plans to fuel your workouts.</p>
+      </div>
+      <div class="card">
+        <h2>Membership</h2>
+        <p>Learn about our membership packages and benefits.</p>
+      </div>
+    </div>
+
+    <!-- About Us Section -->
+    <div class="about-us">
+      <h2>About Us</h2>
+      <p>Fitness Kulture was established in <strong>2019</strong> with the aim of providing top-notch fitness solutions for individuals who are passionate about health and well-being. We offer a variety of fitness options, including yoga, crossfit, body care, and martial arts classes like kickboxing and cardio kickboxing, among many others.</p>
+
+      <div class="key-features">
+        <div>
+          <h4>Business Highlights</h4>
+          <p>- Open Every Day: We are open every day of the week, including Sundays from 5:30 AM to 11:00 PM.</p>
+          <p>- Wide Range of Amenities: Our gym is equipped with state-of-the-art cardio and strength training equipment, sauna, and more.</p>
+          <p>- Fitness Options: We offer personalized fitness plans and group fitness classes.</p>
+        </div>
+        <div>
+          <h4>Our Mission</h4>
+          <p>At Fitness Kulture, we focus on creating a welcoming and motivating environment for everyone—from beginners to seasoned athletes. Our professional trainers ensure that every member receives personalized guidance, whether they’re engaging in group classes or one-on-one training.</p>
+        </div>
+        <div>
+          <h4>Customer Feedback</h4>
+          <p>- Rated 3.9/5 from 251 reviews across various platforms.</p>
+          <p>- Members love our spacious gym, friendly staff, and high-quality equipment.</p>
+          <p>- Suggestions include improving air conditioning maintenance and updating opening/closing timings on the website.</p>
+        </div>
+        <div>
+          <h4>Business Location</h4>
+          <p>Address: Northern Heights 2nd Floor Commercial, Celebration Hotel, Dahisar East, Mumbai - 400068 (Near Hyland Park, Shanti Nagar).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slideshow JavaScript -->
+  <script>
+    let slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  let slides = document.getElementsByClassName("mySlides");
+  for (let i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) { slideIndex = 1 }
+  slides[slideIndex - 1].style.display = "block";
+  setTimeout(showSlides, 3000); // Change image every 3 seconds
+}
+
+// Toggle Navbar visibility
+// Toggle Navbar visibility
+// Toggle Navbar visibility
+function toggleNavbar() {
+  const navbar = document.querySelector('.navbar');
+  const mainContent = document.querySelector('.main-content');
+  
+  // Toggle the navbar's translateX property directly
+  if (navbar.style.transform === 'translateX(0px)') {
+    navbar.style.transform = 'translateX(-250px)';  // Collapse the navbar
+    mainContent.classList.remove('shifted');  // Move content back to the left
+  } else {
+    navbar.style.transform = 'translateX(0px)';  // Expand the navbar
+    mainContent.classList.add('shifted');  // Shift content to the right
+  }
+}
+
+
+let attendanceData = {};
+let isClockedIn = false; // Keeps track of whether the user is clocked in or not
+
+function toggleClock() {
+  const button = document.getElementById("clockButton");
+  const date = new Date().toISOString().split('T')[0]; // Get current date
+
+  if (isClockedIn) {
+    // Clock Out
+    if (attendanceData[date] && attendanceData[date].clockIn) {
+      attendanceData[date].clockOut = new Date().toLocaleTimeString();
+      attendanceData[date].status = 'Present';
+      button.innerText = 'Clock In';
+      alert('Clocked Out at ' + attendanceData[date].clockOut);
+    } else {
+      alert('Please clock in first.');
+    }
+  } else {
+    // Clock In
+    attendanceData[date] = { clockIn: new Date().toLocaleTimeString(), clockOut: null, status: null };
+    button.innerText = 'Clock Out';
+    alert('Clocked In at ' + attendanceData[date].clockIn);
+  }
+
+  // Toggle the clocked-in state
+  isClockedIn = !isClockedIn;
+}
+
+// Toggle View Attendance Dropdown
+function toggleDropdown() {
+  const dropdownContent = document.getElementById("attendanceDropdown");
+  const calendarContainer = document.getElementById('calendarContainer');
+
+  // Toggle display of dropdown content
+  dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+  if (dropdownContent.style.display === "block") {
+    // Show calendar when dropdown is expanded
+    calendarContainer.style.display = 'block';
+    viewAttendance(); // Generate calendar data when dropdown is shown
+  } else {
+    calendarContainer.style.display = 'none'; // Hide calendar when dropdown is collapsed
+  }
+}
+
+function viewAttendance() {
+  const calendar = document.getElementById('calendar');
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // Total days in current month
+
+  // Generate the calendar days
+  let calendarHtml = '<table border="1" cellspacing="0" cellpadding="5"><tr>';
+  for (let i = 1; i <= totalDays; i++) {
+    const date = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+    const attendanceStatus = attendanceData[date] ? attendanceData[date].status : null;
+    const className = attendanceStatus === 'Present' ? 'present' : (attendanceStatus === 'Absent' ? 'absent' : '');
+    calendarHtml += `<td class="${className}">${i}</td>`;
+    if (i % 7 === 0) calendarHtml += '</tr><tr>';
+  }
+  calendarHtml += '</tr></table>';
+  calendar.innerHTML = calendarHtml;
+}
+window.onload = function() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        document.getElementById("user-greeting").innerHTML = `<h2>Welcome, ${user.fullName}</h2><button onclick="logout()">Logout</button>`;
+      }
+    }
+
+   
+  </script>
+
+</body>
+</html>

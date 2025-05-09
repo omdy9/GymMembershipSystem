@@ -1,0 +1,199 @@
+/* General Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-image: url('images/gymbg.jpeg');
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.logo-container {
+  position: absolute;
+  top: 20px; /* Adjust top position as needed */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+}
+
+.logo-img {
+  max-width: 120px;
+  height: auto;
+}
+
+/* Navbar styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: -250px;  /* Initially hidden */
+  width: 250px;
+  height: 100%;
+  background-color: #333;
+  transition: left 0.3s ease-in-out;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 10px;
+}
+
+.hamburger {
+  font-size: 30px;
+  cursor: pointer;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 100;
+}
+
+.main-content {
+  margin-left: 0;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content.shifted {
+  margin-left: 250px; /* Space for the navbar */
+}
+
+/* When navbar is active */
+.navbar.active {
+  left: 0;
+}
+
+/* Styling for the containers */
+.container, .workout-plans, .added-workouts {
+  margin-top: 100px;
+}
+
+button.add-btn, button.save-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #fe0000; /* Red color */
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.add-btn:hover, button.save-btn:hover {
+  background-color: #a31212bd; /* Darker red on hover */
+}
+
+.workout-item {
+  cursor: pointer;
+  padding: 8px;
+  margin-bottom: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.workout-item:hover {
+  background-color: #ddd;
+}
+
+/* Login and Signup styling */
+.login-container, .signup-container {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #fe0000;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 242, 254, 0.5);
+}
+
+/* Button */
+.btn {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #fe0000;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #a31212bd;
+}
+
+/* Signup Link */
+.signup-link {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.signup-link a {
+  color: #00b4d8;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
+}
+
+/* Specific styling for the signup container */
+.signup-container {
+  max-width: 400px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  margin-top: 200px; /* Space from the top */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Adjust the login link at the bottom of the form */
+.login-link {
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+.login-link a {
+  color: #00aaff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

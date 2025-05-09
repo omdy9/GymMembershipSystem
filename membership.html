@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Membership</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Basic styles for the membership page */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #333;
+      text-align: center;
+      padding-top: 20px;
+      transition: left 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    .navbar a {
+      display: block;
+      padding: 15px;
+      text-decoration: none;
+      color: white;
+      font-size: 18px;
+      margin: 10px 0;
+      transition: background-color 0.3s;
+    }
+
+    .navbar a:hover {
+      background-color: #575757;
+    }
+
+    .hamburger {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      cursor: pointer;
+      color: white;
+      z-index: 1001;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 0;
+      padding: 20px;
+      transition: margin-left 0.3s ease-in-out;
+      margin-top: 60px;
+    }
+
+    .main-content.shifted {
+      margin-left: 250px;
+    }
+
+    .membership-container {
+      width: 80%;
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .membership-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .membership-options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .membership-option1 {
+      background-color: #f4f4f9;
+      padding: 20px;
+      border-radius: 10px;
+      width: 40%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .membership-option1 h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .membership-option1 p {
+      font-size: 18px;
+    }
+
+    .membership-option1 button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .membership-option1 button:hover {
+      opacity: 0.8;
+    }
+
+    .membership-option {
+      background-color: #ffe605d7;
+      padding: 20px;
+      border-radius: 10px;
+      width: 40%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .membership-option h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .membership-option p {
+      font-size: 18px;
+    }
+
+    .membership-option button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .membership-option button:hover {
+      opacity: 0.8;
+    }
+
+    /* Payment Gateway Hovering Card */
+    .payment-gateway {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      display: none;
+      z-index: 100;
+      animation: fadeIn 0.5s;
+    }
+
+    /* Fade-in animation for the modal */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .payment-gateway h3 {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .payment-gateway form {
+      display: grid;
+      grid-gap: 15px;
+    }
+
+    .payment-gateway select,
+    .payment-gateway input[type="text"],
+    .payment-gateway input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .payment-gateway button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .payment-gateway button:hover {
+      opacity: 0.8;
+    }
+
+    /* QR Code */
+    #qrCode {
+      margin-top: 20px;
+      display: none;
+    }
+
+    #qrCode img {
+      width: 150px;
+      height: 150px;
+    }
+
+    /* Close Button */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+      background-color: transparent;
+      border: none;
+      color: #333;
+      cursor: pointer;
+    }
+
+    /* Payment Status */
+    .payment-status {
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+    }
+
+    .payment-failure {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="hamburger" onclick="toggleNavbar()">&#9776;</div>
+  <div class="navbar" id="navbar">
+    <a href="home.html">Home</a>
+    <a href="exercise.html">Exercise</a>
+    <a href="profile.html">Profile</a>
+    <a href="diet.html">Diet</a>
+    <a href="membership.html">Membership</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="logo-container">
+      <a href="home.html">
+        <img src="images/Logo1.png" alt="Logo" class="logo-img">
+      </a>
+    </div>
+
+    <div class="membership-container">
+      <div class="membership-header">
+        <h2>Your Membership Status</h2>
+      </div>
+
+      <div id="currentMembershipStatus">
+        <p><strong>Current Membership:</strong> <span id="membershipStatus">Expired</span></p>
+        <p><strong>Expiry Date:</strong> <span id="expiryDate">2024-12-01</span></p>
+      </div>
+
+      <div id="membershipOptions">
+        <h3>Your membership has expired. Choose your new membership:</h3>
+        <div class="membership-options">
+          <div class="membership-option1">
+            <h3>Normal Membership</h3>
+            <p>Price: ₹12,000 per year | ₹8,000 for 6 months | ₹1,500 per month</p>
+            <button onclick="chooseNormalMembership()">Choose Normal</button>
+          </div>
+
+          <div class="membership-option">
+            <h3>Gold Membership</h3>
+            <p>Price: ₹18,000 per year | ₹10,500 for 6 months | ₹3,000 per month</p>
+            <p>Includes personal training with professional trainers</p>
+            <button onclick="chooseGoldMembership()">Choose Gold</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Gateway Modal -->
+  <div id="paymentSection" class="payment-gateway">
+    <button class="close-btn" onclick="closePaymentGateway()">X</button>
+    <h3>Proceed to Payment</h3>
+    <form id="paymentForm">
+      <label for="paymentMethod">Select Payment Method:</label>
+      <select id="paymentMethod" onchange="togglePaymentDetails()">
+        <option value="creditCard">Credit/Debit Card</option>
+        <option value="netBanking">Net Banking</option>
+        <option value="upi">UPI</option>
+      </select>
+
+      <!-- Card Details -->
+      <div id="cardDetails" class="payment-details">
+        <input type="text" id="cardNumber" placeholder="Card Number" maxlength="16">
+        <input type="number" id="cardCVV" placeholder="CVV">
+        <input type="text" id="cardExpiry" placeholder="MM/YY">
+      </div>
+
+      <!-- Net Banking -->
+      <div id="netBankingInput" class="payment-details" style="display: none;">
+        <select id="bankSelect">
+          <option value="bank1">Bank 1</option>
+          <option value="bank2">Bank 2</option>
+          <option value="bank3">Bank 3</option>
+        </select>
+      </div>
+
+      <!-- UPI QR Code -->
+      <div id="upiSection" class="payment-details" style="display: none;">
+        <div id="qrCode">
+          <img src="images/upi-placeholder.png" alt="UPI QR Code">
+        </div>
+        <p>Scan the QR code to pay</p>
+      </div>
+
+      <button type="button" onclick="submitPayment()">Submit Payment</button>
+    </form>
+  </div>
+
+  <script>
+    // Toggle navbar visibility
+    function toggleNavbar() {
+      var navbar = document.getElementById("navbar");
+      var mainContent = document.querySelector(".main-content");
+      if (navbar.style.left === "0px") {
+        navbar.style.left = "-250px";
+        mainContent.classList.remove("shifted");
+      } else {
+        navbar.style.left = "0";
+        mainContent.classList.add("shifted");
+      }
+    }
+
+    // Choose Normal Membership
+    function chooseNormalMembership() {
+      showPaymentGateway('₹12,000');
+    }
+
+    // Choose Gold Membership
+    function chooseGoldMembership() {
+      showPaymentGateway('₹18,000');
+    }
+
+    // Show payment gateway modal
+    function showPaymentGateway(price) {
+      document.getElementById("paymentSection").style.display = "block";
+    }
+
+    // Close payment gateway modal
+    function closePaymentGateway() {
+      document.getElementById("paymentSection").style.display = "none";
+    }
+
+    // Toggle payment details based on selected method
+    function togglePaymentDetails() {
+      var paymentMethod = document.getElementById("paymentMethod").value;
+      document.getElementById("cardDetails").style.display = paymentMethod === 'creditCard' ? 'block' : 'none';
+      document.getElementById("netBankingInput").style.display = paymentMethod === 'netBanking' ? 'block' : 'none';
+      document.getElementById("upiSection").style.display = paymentMethod === 'upi' ? 'block' : 'none';
+    }
+
+    // Submit payment
+    function submitPayment() {
+      alert("Payment successful!");
+      closePaymentGateway();
+    }
+  </script>
+
+</body>
+</html>
