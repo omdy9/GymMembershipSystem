@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     // Check if admin login
-    if ($username === "admin" && $password === "admin") {
+    if ($username === "admin@fitnesskulture.in" && $password === "admin") {
         $_SESSION['admin'] = true; // Store admin session
         header("Location: admin.php"); // Redirect to admin page
         exit();
@@ -80,5 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 </body>
 </html>
+
 
 
