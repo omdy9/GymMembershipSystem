@@ -1,295 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diet Page</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* General Styles */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin-top: 900px ;
-      padding: 0;
-      color: #333;
-      text-align: center;
-      
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diet Tracker</title>
+<link rel="stylesheet" href="style.css">
 
-    /* Navbar Styles */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
-      background-color: #333;
-      text-align: center;
-      padding-top: 20px;
-      transition: left 0.3s ease-in-out;
-      z-index: 1000;
-    }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
 
-    .navbar a {
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-      color: white;
-      font-size: 18px;
-      margin: 10px 0;
-      transition: background-color 0.3s;
-    }
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color:white;
+}
 
-    .navbar a:hover {
-      background-color: #575757;
-    }
+/* LOGO */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    padding: 20px;
+}
+.logo {
+    width: 120px;
+    cursor: pointer;
+}
 
-    .hamburger {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 30px;
-      cursor: pointer;
-      color: white;
-      z-index: 1001;
-    }
+/* FORM */
+form {
+    background-color: rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 0 auto 30px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(255,255,255,0.43);
+}
+label {
+    color:red;
+}
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(255,0,0);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
+/* TABLE */
+.table-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 10px rgba(255,255,255,0.43);
+}
+.table-container h2 {
+    text-align: center;
+    color:white;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    background-color: rgba(255,0,0,0.87);
+    color: white;
+}
+td, th {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+tbody {
+    color:white;
+}
+
+/* NAVBAR */
+.navbar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    background-color: #333;
+    transition: 0.3s;
+    padding-top: 60px;
+    z-index:1000;
+}
+.navbar a {
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+.navbar a:hover {
+    background-color: red;
+}
+.hamburger {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+    z-index:1001;
+}
+
+.main-content {
+    margin-top: 350px;
+    transition: margin-left 0.3s;
+}
+.main-content.shifted {
+    margin-left: 250px;
+}
+
+/* MOBILE */
+@media(max-width:768px){
     .main-content {
-      margin-left: 0;
-      padding: 20px;
-      transition: margin-left 0.3s ease-in-out;
-      margin-top: 60px;
+        margin-top: 250px;
     }
-
-    .main-content.shifted {
-      margin-left: 250px;
-    }
-
-    /* Container Styles */
-    .container {
-      margin-top: 20px;
-    }
-
-    h2 {
-      color: #fff;
-      font-size: 24px;
-      margin-bottom: 15px;
-    }
-
-    select, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px 0;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    select {
-      width: 200px;
-      background-color: #fff;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-
-    .dishes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .dish-card {
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 15px;
-      width: 300px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .dish-card:hover {
-      transform: scale(1.05);
-    }
-
-    .dish-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
-
-    .dish-card h3 {
-      margin: 10px 0;
-      color: #333;
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 1002;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 400px;
-      text-align: center;
-    }
-
-    .close-modal {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .close-modal:hover {
-      background: darkred;
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
 
-   <!-- Navbar -->
-   <div class="hamburger" onclick="toggleNavbar()">&#9776;</div>
-   <div class="navbar" id="navbar">
-     <a href="home.html">Home</a>
-     <a href="exercise.html">Exercise</a>
-     <a href="profile.html">Profile</a>
-     <a href="diet.html">Diet</a>
-     <a href="membership.html">Membership</a>
-   </div>
- 
-   <!-- Main Content -->
-   <div class="main-content">
-     <div class="logo-container">
-       <a href="home.html">
-         <img src="images/Logo1.png" alt="Logo" class="logo-img">
-       </a>
-     </div>
- 
-     <!-- Preference Section -->
-     <div class="container">
-       <h2>Select Your Diet Preference</h2>
-       <select id="preference" title="Diet Preference" onchange="displayDishes()">
-         <option value="gain">Weight Gain</option>
-         <option value="loss">Weight Loss</option>
-       </select>
-     </div>
- 
-     <!-- Dishes Section -->
-     <div class="dishes" id="dishes">
-       <!-- Dishes will be populated dynamically -->
-     </div>
-   </div>
- 
-   <!-- Modal for Dish Details -->
-   <div class="modal" id="dishModal">
-     <div class="modal-content" id="modalContent">
-       <!-- Dish details will be populated dynamically -->
-     </div>
-     <button class="close-modal" onclick="closeModal()">Close</button>
-   </div>
- 
-   <script>
-     const dishes = {
-       gain: [
-         { name: "Grilled Chicken Salad", image: "images/chicken.jpg", calories: 400, protein: "30g", carbs: "15g", fat: "15g" },
-         { name: "Peanut Butter Smoothie", image: "images/smoothie.jpeg", calories: 500, protein: "20g", carbs: "40g", fat: "25g" },
-         { name: "Avocado Toast with Eggs", image: "images/avocado-toast.jpeg", calories: 450, protein: "25g", carbs: "35g", fat: "20g" },
-         { name: "Salmon and Quinoa", image: "images/salmon-quinoa.jpeg", calories: 600, protein: "40g", carbs: "50g", fat: "25g" },
-         { name: "Protein Pancakes", image: "images/protein-pancakes.jpeg", calories: 500, protein: "30g", carbs: "50g", fat: "15g" },
-         { name: "Oatmeal with Nuts", image: "images/oatmeal-nuts.jpeg", calories: 450, protein: "15g", carbs: "60g", fat: "15g" },
-         { name: "Chicken Burrito Bowl", image: "images/burrito-bowl.jpeg", calories: 700, protein: "40g", carbs: "60g", fat: "20g" },
-         { name: "Turkey Sandwich", image: "images/turkey-sandwich.jpeg", calories: 550, protein: "25g", carbs: "45g", fat: "18g" },
-         { name: "Steak and Sweet Potato", image: "images/steak-sweet-potato.jpeg", calories: 650, protein: "50g", carbs: "40g", fat: "20g" },
-         { name: "Trail Mix and Yogurt", image: "images/trail-mix-yogurt.jpeg", calories: 500, protein: "15g", carbs: "40g", fat: "25g" },
-       ],
-       loss: [
-         { name: "Quinoa Salad", image: "images/quinoa.jpeg", calories: 200, protein: "10g", carbs: "25g", fat: "5g" },
-         { name: "Steamed Vegetables", image: "images/veggies.jpg", calories: 150, protein: "5g", carbs: "10g", fat: "2g" },
-         { name: "Grilled Salmon with Asparagus", image: "images/salmon-asparagus.jpeg", calories: 350, protein: "35g", carbs: "5g", fat: "15g" },
-         { name: "Zucchini Noodles", image: "images/zucchini-noodles.jpeg", calories: 180, protein: "10g", carbs: "20g", fat: "8g" },
-         { name: "Cauliflower Rice", image: "images/cauliflower-rice.jpeg", calories: 250, protein: "15g", carbs: "30g", fat: "10g" },
-         { name: "Spinach Omelette", image: "images/spinach-omelette.jpeg", calories: 200, protein: "20g", carbs: "2g", fat: "5g" },
-         { name: "Chicken Lettuce Wraps", image: "images/lettuce-wraps.jpeg", calories: 300, protein: "25g", carbs: "15g", fat: "10g" },
-         { name: "Roasted Vegetables", image: "images/roasted-vegetables.jpeg", calories: 150, protein: "5g", carbs: "20g", fat: "7g" },
-         { name: "Broiled Tilapia", image: "images/tilapia-broccoli.jpeg", calories: 250, protein: "35g", carbs: "10g", fat: "5g" },
-         { name: "Cucumber Salad", image: "images/scucumber-salad.jpeg", calories: 100, protein: "5g", carbs: "10g", fat: "3g" },
-       ]
-     };
- 
-     function toggleNavbar() {
-       const navbar = document.getElementById('navbar');
-       const mainContent = document.querySelector('.main-content');
-       if (navbar.style.left === '0px') {
-         navbar.style.left = '-250px';
-         mainContent.classList.remove('shifted');
-       } else {
-         navbar.style.left = '0';
-         mainContent.classList.add('shifted');
-       }
-     }
- 
-     function displayDishes() {
-       const preference = document.getElementById('preference').value;
-       const dishesContainer = document.getElementById('dishes');
-       dishesContainer.innerHTML = '';
-       dishes[preference].forEach(dish => {
-         const card = document.createElement('div');
-         card.classList.add('dish-card');
-         card.innerHTML = `
-           <img src="${dish.image}" alt="${dish.name}">
-           <h3>${dish.name}</h3>
-         `;
-         card.onclick = () => showDishDetails(dish);
-         dishesContainer.appendChild(card);
-       });
-     }
- 
-     function showDishDetails(dish) {
-       const modal = document.getElementById('dishModal');
-       const modalContent = document.getElementById('modalContent');
-       modalContent.innerHTML = `
-         <h2>${dish.name}</h2>
-         <p>Calories: ${dish.calories}</p>
-         <p>Protein: ${dish.protein}</p>
-         <p>Carbs: ${dish.carbs}</p>
-         <p>Fat: ${dish.fat}</p>
-       `;
-       modal.style.display = 'flex';
-     }
- 
-     function closeModal() {
-       const modal = document.getElementById('dishModal');
-       modal.style.display = 'none';
-     }
- 
-     window.onload = displayDishes;
-   </script>
- </body>
- </html>
+<div class="hamburger" onclick="toggleNavbar()">☰</div>
+
+<div class="navbar" id="navbar">
+    <h2 style="color:white;text-align:center">Welcome, User</h2>
+    <a href="home.html">Home</a>
+    <a href="exercise.html">Exercise</a>
+    <a href="profile.html">Profile</a>
+    <a href="diet.html">Diet</a>
+    <a href="membership.html">Membership</a>
+</div>
+
+<div class="logo-container">
+    <img src="images/logo1.png" class="logo">
+</div>
+
+<div class="main-content">
+
+<h1>Diet Tracker</h1>
+
+<form onsubmit="addDiet(event)">
+    <label>Meal Type</label>
+    <select id="meal_type" required>
+        <option>Breakfast</option>
+        <option>Lunch</option>
+        <option>Dinner</option>
+        <option>Snack</option>
+    </select>
+
+    <label>Food Item</label>
+    <input id="food_item" required>
+
+    <label>Calories</label>
+    <input type="number" id="calories">
+
+    <label>Protein (g)</label>
+    <input type="number" id="protein" step="0.01">
+
+    <label>Carbs (g)</label>
+    <input type="number" id="carbs" step="0.01">
+
+    <label>Fats (g)</label>
+    <input type="number" id="fats" step="0.01">
+
+    <label>Date</label>
+    <input type="date" id="date" required>
+
+    <button>Add Diet Record</button>
+</form>
+
+<div class="table-container">
+<h2>Your Diet Records</h2>
+<table>
+<thead>
+<tr>
+<th>Date</th><th>Meal</th><th>Food</th>
+<th>Calories</th><th>Protein</th><th>Carbs</th><th>Fats</th>
+</tr>
+</thead>
+<tbody id="dietTable"></tbody>
+</table>
+</div>
+
+</div>
+
+<script>
+/* NAVBAR */
+function toggleNavbar(){
+    const nav=document.getElementById("navbar");
+    const main=document.querySelector(".main-content");
+    nav.style.left = nav.style.left==="0px" ? "-250px" : "0px";
+    main.classList.toggle("shifted");
+}
+
+/* DIET LOGIC */
+let diets = JSON.parse(localStorage.getItem("diets")) || [];
+
+function addDiet(e){
+    e.preventDefault();
+    diets.unshift({
+        date: date.value,
+        meal: meal_type.value,
+        food: food_item.value,
+        calories: calories.value,
+        protein: protein.value,
+        carbs: carbs.value,
+        fats: fats.value
+    });
+    localStorage.setItem("diets", JSON.stringify(diets));
+    e.target.reset();
+    renderTable();
+}
+
+function renderTable(){
+    dietTable.innerHTML="";
+    diets.forEach(d=>{
+        dietTable.innerHTML += `
+        <tr>
+            <td>${d.date}</td>
+            <td>${d.meal}</td>
+            <td>${d.food}</td>
+            <td>${d.calories}</td>
+            <td>${d.protein}</td>
+            <td>${d.carbs}</td>
+            <td>${d.fats}</td>
+        </tr>`;
+    });
+}
+renderTable();
+</script>
+
+</body>
+</html>
