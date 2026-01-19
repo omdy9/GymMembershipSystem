@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background:#f7f7f7;
+    margin:0;
+}
+.navbar {
+    background:#333;
+    overflow:hidden;
+}
+.navbar a {
+    float:left;
+    color:white;
+    padding:14px 20px;
+    text-decoration:none;
+}
+.navbar a:hover {
+    background:#ddd;
+    color:black;
+}
+.container {
+    width:90%;
+    margin:30px auto;
+    background:white;
+    padding:20px;
+    border-radius:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+h1,h2 {
+    text-align:center;
+}
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:30px;
+}
+th,td {
+    border:1px solid #ddd;
+    padding:10px;
+}
+th {
+    background:#333;
+    color:white;
+}
+.btn {
+    background:#4CAF50;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:5px;
+    cursor:pointer;
+}
+.form-inline {
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+}
+.form-inline input,
+.form-inline select {
+    padding:6px;
+}
+@media(max-width:768px){
+    .form-inline {
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <a href="admin.html">Admin Panel</a>
+    <a href="analytics.html">Analytics Panel</a>
+</div>
+
+<div class="container">
+<h1>Admin Panel</h1>
+
+<h2>Users</h2>
+<table>
+<thead>
+<tr>
+<th>UID</th>
+<th>Full Name</th>
+<th>Username</th>
+<th>Email</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="usersTable"></tbody>
+</table>
+
+<h2>Memberships</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Full Name</th>
+<th>Username</th>
+<th>Status</th>
+<th>Type</th>
+<th>Expiry</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="membershipTable"></tbody>
+</table>
+</div>
+
+<script>
+/* MOCK DATA */
+let users = JSON.parse(localStorage.getItem("users")) || [
+    {uid:1, fullname:"John Doe", username:"john", email:"john@mail.com"},
+    {uid:2, fullname:"Jane Smith", username:"jane", email:"jane@mail.com"}
+];
+
+let memberships = JSON.parse(localStorage.getItem("memberships")) || [
+    {id:1, uid:1, fullname:"John Doe", username:"john", status:"Active", type:"gold", expiry:"2026-01-01"},
+    {id:2, uid:2, fullname:"Jane Smith", username:"jane", status:"Expired", type:"normal", expiry:"2024-05-01"}
+];
+
+function saveData(){
+    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem("memberships", JSON.stringify(memberships));
+}
+
+/* RENDER USERS */
+function renderUsers(){
+    usersTable.innerHTML="";
+    users.forEach(u=>{
+        usersTable.innerHTML+=`
+        <tr>
+            <td>${u.uid}</td>
+            <td>${u.fullname}</td>
+            <td>${u.username}</td>
+            <td>${u.email}</td>
+            <td>
+                <form onsubmit="updateUser(event,${u.uid})" class="form-inline">
+                    <input value="${u.fullname}" required>
+                    <input value="${u.username}" required>
+                    <input type="email" value="${u.email}" required>
+                    <button class="btn">Update</button>
+                </form>
+            </td>
+        </tr>`;
+    });
+}
+
+/* UPDATE USER */
+function updateUser(e,uid){
+    e.preventDefault();
+    let inputs=e.target.querySelectorAll("input");
+    let user=users.find(u=>u.uid===uid);
+    user.fullname=inputs[0].value;
+    user.username=inputs[1].value;
+    user.email=inputs[2].value;
+    saveData();
+    alert("User updated");
+}
+
+/* RENDER MEMBERSHIPS */
+function renderMemberships(){
+    membershipTable.innerHTML="";
+    memberships.forEach(m=>{
+        membershipTable.innerHTML+=`
+        <tr>
+            <td>${m.id}</td>
+            <td>${m.fullname}</td>
+            <td>${m.username}</td>
+            <td>${m.status}</td>
+            <td>${m.type}</td>
+            <td>${m.expiry}</td>
+            <td>
+                <form onsubmit="updateMembership(event,${m.id})" class="form-inline">
+                    <select>
+                        <option ${m.status==="Active"?"selected":""}>Active</option>
+                        <option ${m.status==="Expired"?"selected":""}>Expired</option>
+                        <option ${m.status==="Pending"?"selected":""}>Pending</option>
+                    </select>
+                    <select>
+                        <option ${m.type==="normal"?"selected":""}>normal</option>
+                        <option ${m.type==="gold"?"selected":""}>gold</option>
+                    </select>
+                    <input type="date" value="${m.expiry}">
+                    <button class="btn">Update</button>
+                </form>
+            </td>
+        </tr>`;
+    });
+}
+
+/* UPDATE MEMBERSHIP */
+function updateMembership(e,id){
+    e.preventDefault();
+    let inputs=e.target.querySelectorAll("select,input");
+    let mem=memberships.find(m=>m.id===id);
+    mem.status=inputs[0].value;
+    mem.type=inputs[1].value;
+    mem.expiry=inputs[2].value;
+    saveData();
+    alert("Membership updated");
+}
+
+renderUsers();
+renderMemberships();
+</script>
+
+</body>
+</html>
