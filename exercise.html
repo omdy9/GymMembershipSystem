@@ -1,473 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exercise Page</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* General styles */
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercise</title>
 
-    /* Navbar and Hamburger Menu */
-   /* Navbar and Hamburger Menu */
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#1a1a1a;
+  color:white;
+  margin:0;
+}
+
+/* NAVBAR */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: -250px; /* Initially hidden by moving out of the viewport */
-  width: 250px;
-  height: 100%;
-  background-color: #333;
-  padding-top: 20px;
-  text-align: center;
-  transition: left 0.3s ease-in-out; /* Smooth slide-in/out */
-  z-index: 1000; /* Ensure navbar stays on top */
-  overflow: hidden; /* Prevent overflow of content */
+  width:250px;
+  height:100%;
+  position:fixed;
+  top:0;
+  left:-250px;
+  background:#333;
+  padding-top:60px;
+  transition:0.3s;
 }
-
 .navbar a {
-  display: block;
-  padding: 15px;
-  text-decoration: none;
-  color: white;
-  font-size: 18px;
-  margin: 10px 0;
-  transition: background-color 0.3s;
+  color:white;
+  padding:12px 20px;
+  display:block;
+  text-decoration:none;
 }
+.navbar a:hover { background:red; }
 
-.navbar a:hover {
-  background-color: #575757;
-}
-
-/* Main content area */
-.main-content {
-  margin-left: 0; /* No margin by default */
-  padding: 20px;
-  transition: margin-left 0.3s ease-in-out;
-}
-
-/* When navbar is expanded */
-.main-content.shifted {
-  margin-left: 250px; /* Shift content when the navbar is visible */
-}
-
-/* Hamburger icon */
 .hamburger {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  font-size: 30px;
-  cursor: pointer;
-  color: white;
-  z-index: 1001; /* Ensure hamburger icon is on top */
+  position:fixed;
+  top:20px;
+  left:20px;
+  font-size:30px;
+  cursor:pointer;
+  z-index:1001;
 }
 
-    /* Workout section */
-    .container {
-      margin-top: 20px;
-    }
+/* LOGO */
+.logo-container {
+  display:flex;
+  justify-content:center;
+  margin-top:30px;
+}
+.logo { width:120px; }
 
-    h2 {
-      color: #ffffff;
-      font-size: 24px;
-      margin-bottom: 15px;
-    }
+/* CONTAINERS */
+.container, #container1, #container2 {
+  max-width:800px;
+  margin:40px auto;
+  background:rgba(0,0,0,0.2);
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 4px 10px rgba(255,255,255,0.4);
+}
 
-    select, button {
-      padding: 10px;
-      font-size: 16px;
-      margin: 10px 0;
-      width: 200px;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+/* FORM */
+select, input, button {
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  background:rgba(0,0,0,0.3);
+  color:white;
+  border:none;
+}
+button {
+  background:red;
+  cursor:pointer;
+}
+button:hover { background:#cc0000 }
 
-    select {
-      background-color: #fff;
-    }
+/* SELECTED EXERCISES */
+.selected-exercise {
+  background:rgba(0,0,0,0.4);
+  padding:10px;
+  margin:5px 0;
+  display:flex;
+  justify-content:space-between;
+}
+.remove-button {
+  background:red;
+  color:white;
+  border:none;
+  padding:5px;
+}
 
-    button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      font-size: 16px;
-    }
-
-    button:hover {
-      opacity: 0.8;
-    }
-
-    /* Workout plans */
-    .workout-plans {
-      margin-top: 30px;
-    }
-
-    .workout-item {
-      background-color: #444;
-      color: white;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .workout-item span {
-      font-size: 14px;
-      color: #ddd;
-    }
-
-    /* Added workouts section */
-    .added-workouts {
-      margin-top: 30px;
-    }
-
-    .added-workouts ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    .added-workouts li {
-      background-color: #2196F3;
-      color: white;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-
-    .save-btn {
-      padding: 10px 20px;
-      background-color: #2196F3;
-      color: white;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    .save-btn:hover {
-      opacity: 0.8;
-    }
-
-    /* Responsiveness */
-    @media (max-width: 768px) {
-      .navbar {
-        display: block;
-        width: 100%;
-        height: auto;
-        position: relative;
-      }
-
-      .hamburger {
-        display: block;
-      }
-
-      .main-content {
-        margin-left: 0;
-      }
-      
-      .cal{
-        color: #ffffff;
-        text-decoration-color: #ffffff;
-        text-decoration: solid;
-      }
-    }
-  </style>
+/* MOBILE */
+@media(max-width:768px){
+  .container, #container1, #container2 {
+    width:90%;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Hamburger and Navbar -->
-  <div class="hamburger" onclick="toggleNavbar()">&#9776;</div>
-  <div class="navbar" id="navbar">
-    <a href="home.html">Home</a>
-    <a href="exercise.html">Exercise</a>
-    <a href="profile.html">Profile</a>
-    <a href="diet.html">Diet</a>
-    <a href="membership.html">Membership</a>
-  </div>
+<div class="hamburger" onclick="toggleNavbar()">☰</div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <div class="logo-container">
-      <a href="home.html">
-        <img src="images/Logo1.png" alt="Logo" class="logo-img">
-      </a>
-    </div>
-
-    <!-- Workout Type and Intensity Selection -->
-    <div class="container">
-      <h2>Select Your Workout Type</h2>
-      <select id="workoutType" title="Workout Type" onchange="displayWorkouts()">
-        <option value="upperbody">Upper Body</option>
-        <option value="cardio">Cardio</option>
-        <option value="lowerbody">Lower Body</option>
-      </select>
-
-      <select id="intensity" title="Intensity Level" onchange="displayWorkouts()">
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-
-      <select id="muscleGroup" title="Muscle Group" onchange="displayWorkouts()">
-        <!-- Options are dynamically updated here -->
-      </select>
-
-      <button class="add-btn" onclick="addWorkout()">Add Workout</button>
-    </div>
-
-    <!-- Available Workouts List -->
-    <div class="workout-plans" id="workoutPlans">
-      <h2>Available Workout Plans</h2>
-      <ul id="workoutsList">
-        <!-- Workouts will be populated dynamically -->
-      </ul>
-    </div>
-
-    <!-- Added Workouts List -->
-    <div class="added-workouts">
-      <h2>Added Workouts</h2>
-      <ul id="addedWorkoutsList">
-        <!-- Added workouts will appear here -->
-      </ul>
-      <button onclick="saveWorkoutsToFirebase()">Save Added Workouts</button>
-<ul id="addedWorkoutsList"></ul>
-<div class="cal">
-  Total Calories: <span id="calorieCounter">0</span>
+<div class="navbar" id="navbar">
+  <h3 style="text-align:center">Welcome, User</h3>
+  <a href="home.html">Home</a>
+  <a href="exercise.html">Exercise</a>
+  <a href="profile.html">Profile</a>
+  <a href="diet.html">Diet</a>
+  <a href="membership.html">Membership</a>
 </div>
-    </div>
-  </div>
- <!-- Firebase configuration and functions -->
- <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-app.js"></script>
- <script src="https://www.gstatic.com/firebasejs/9.12.1/firebase-database.js"></script>
- <script>
-   const firebaseConfig = {
-    apiKey: "AIzaSyBwDUs6323Ys9ijJAyvMfMvBDUnbteJiKE",
-    authDomain: "fitnesskulture-47638.firebaseapp.com",
-    databaseURL: "https://fitnesskulture-47638-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fitnesskulture-47638",
-    storageBucket: "fitnesskulture-47638.appspot.com",
-    messagingSenderId: "411955828320",
-    appId: "1:411955828320:web:9a8dd46cb32f902bb75505"
-  };
 
-  // Initialize Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const database = firebase.database(app);
+<div class="logo-container">
+  <img src="images/logo1.png" class="logo">
+</div>
 
-  // Add workout to the list and track calories
-  function addWorkout(workoutName, calories) {
-    const addedWorkoutsList = document.getElementById('addedWorkoutsList');
-    const li = document.createElement('li');
-    li.innerHTML = `
-      ${workoutName} (${calories} Calories)
-      <button onclick="removeWorkout(this, ${calories})">Remove</button>
-    `;
-    addedWorkoutsList.appendChild(li);
+<!-- EXERCISE SELECTION -->
+<div class="container">
+<h2>Select an Exercise</h2>
 
-    // Update total calories
-    updateCalorieCounter(calories);
-  }
+<select id="exerciseSelect">
+  <option value="">Select Exercise</option>
+  <optgroup label="Cardio">
+    <option value="Running|300">Running (300 Calories)</option>
+    <option value="Cycling|250">Cycling (250 Calories)</option>
+  </optgroup>
+  <optgroup label="Strength">
+    <option value="Push Ups|100">Push Ups (100 Calories)</option>
+    <option value="Squats|150">Squats (150 Calories)</option>
+  </optgroup>
+</select>
 
-  function updateCalorieCounter(change) {
-    const calorieCounter = document.getElementById('calorieCounter');
-    let currentCalories = parseInt(calorieCounter.textContent) || 0;
-    currentCalories += change;
-    calorieCounter.textContent = currentCalories;
-  }
+<button onclick="addExercise()">Save Exercise</button>
 
-  function removeWorkout(button, calories) {
-    const workoutItem = button.parentElement;
-    workoutItem.remove();
-    updateCalorieCounter(-calories);
-  }
+<h3>Selected Exercises</h3>
+<div id="selectedExercises"></div>
 
- // Save added workouts to Firebase
-function saveWorkoutsToFirebase() {
-  const addedWorkoutsList = document.getElementById('addedWorkoutsList');
-  const workouts = [];
+<button onclick="saveWorkout()">Save Custom Workout</button>
+</div>
 
-  // Collect workouts from the added list
-  addedWorkoutsList.querySelectorAll('li').forEach((li) => {
-    const workoutText = li.firstChild.textContent.trim();
-    const workoutName = workoutText.split('(')[0].trim();
-    const calories = parseInt(workoutText.match(/\d+/)[0]);
-    workouts.push({ name: workoutName, calories });
-  });
+<!-- BMI CALCULATOR -->
+<div id="container2">
+<h3>Calculate BMI</h3>
 
-  if (workouts.length === 0) {
-    alert('No workouts to save!');
-    return;
-  }
+<input type="number" id="height" placeholder="Height (meters)" step="0.01">
+<input type="number" id="weight" placeholder="Weight (kg)" step="0.1">
+<button onclick="calculateBMI()">Calculate BMI</button>
+</div>
 
-  // Retrieve the logged-in user's userId
-  const userId = localStorage.getItem('userId');
-  if (!userId) {
-    console.error('User is not logged in. Please log in first.');
-    alert('User is not logged in. Please log in first.');
-    return;
-  }
+<!-- BMI CHART -->
+<div id="container1">
+<h3>Your BMI Over Time</h3>
+<canvas id="bmiChart"></canvas>
+</div>
 
-  console.log('Saving workouts for userId:', userId);
-  console.log('Workouts to save:', workouts);
-
-  // Save to Firebase under "userWorkouts"
-  const workoutsRef = firebase.database().ref(`userWorkouts/${userId}`);
-  workoutsRef
-    .set(workouts)
-    .then(() => {
-      console.log('Workouts saved successfully!');
-      alert('Workouts saved successfully!');
-    })
-    .catch((error) => {
-      console.error('Failed to save workouts:', error.message);
-      alert('Failed to save workouts: ' + error.message);
-    });
+<script>
+/* NAVBAR */
+function toggleNavbar(){
+  navbar.style.left = navbar.style.left==="0px" ? "-250px" : "0px";
 }
 
+/* EXERCISES */
+let selected = JSON.parse(localStorage.getItem("selectedExercises")) || [];
 
-  // Initialize page
-  window.onload = function () {
-    document.getElementById('calorieCounter').textContent = 0;
-  };
-  function toggleNavbar() {
-    const navbar = document.getElementById('navbar');
-    const mainContent = document.querySelector('.main-content');
+function renderSelected(){
+  selectedExercises.innerHTML="";
+  selected.forEach((e,i)=>{
+    selectedExercises.innerHTML+=`
+      <div class="selected-exercise">
+        ${e.name} (${e.cal} cal)
+        <button class="remove-button" onclick="removeExercise(${i})">Remove</button>
+      </div>`;
+  });
+}
+renderSelected();
 
-    if (navbar.style.left === '0px') {
-      navbar.style.left = '-250px';
-      mainContent.classList.remove('shifted');
-    } else {
-      navbar.style.left = '0';
-      mainContent.classList.add('shifted');
-    }
-  }
+function addExercise(){
+  if(!exerciseSelect.value) return;
+  const [name,cal]=exerciseSelect.value.split("|");
+  selected.push({name,cal:Number(cal)});
+  localStorage.setItem("selectedExercises",JSON.stringify(selected));
+  renderSelected();
+}
 
-  function displayWorkouts() {
-    const workoutType = document.getElementById('workoutType').value;
-    const intensity = document.getElementById('intensity').value;
-    const muscleGroup = document.getElementById('muscleGroup').value;
+function removeExercise(i){
+  selected.splice(i,1);
+  localStorage.setItem("selectedExercises",JSON.stringify(selected));
+  renderSelected();
+}
 
-    // Update muscle group dropdown options dynamically
-    const muscleGroupDropdown = document.getElementById('muscleGroup');
-    muscleGroupDropdown.innerHTML = '';
+function saveWorkout(){
+  let workouts=JSON.parse(localStorage.getItem("workouts"))||[];
+  workouts.push({date:new Date().toISOString(), exercises:selected});
+  localStorage.setItem("workouts",JSON.stringify(workouts));
+  selected=[];
+  localStorage.removeItem("selectedExercises");
+  renderSelected();
+  alert("Workout Saved!");
+}
 
-    if (workoutType === 'lowerbody') {
-      muscleGroupDropdown.innerHTML = '<option value="legs">Legs</option>';
-    } else if (workoutType === 'cardio') {
-      muscleGroupDropdown.innerHTML = `
-        <option value="core">Core</option>
-        <option value="running">Running</option>
-        <option value="cycling">Cycling</option>
-      `;
-    } else {
-      muscleGroupDropdown.innerHTML = `
-        <option value="chest">Chest</option>
-        <option value="arms">Arms</option>
-      `;
-    }
+/* BMI */
+let bmiHistory = JSON.parse(localStorage.getItem("bmiHistory")) || [];
 
-    // Fetch workouts and display them
-    const workouts = getWorkouts(workoutType, intensity, muscleGroup);
-    displayFilteredWorkouts(workouts);
-  }
+function calculateBMI(){
+  const h=parseFloat(height.value);
+  const w=parseFloat(weight.value);
+  if(!h||!w) return;
+  const bmi=(w/(h*h)).toFixed(2);
+  bmiHistory.push({date:new Date().toLocaleDateString(), bmi});
+  localStorage.setItem("bmiHistory",JSON.stringify(bmiHistory));
+  renderChart();
+  alert("Your BMI: "+bmi);
+}
 
-  function getWorkouts(type, intensity, muscleGroup) {
-    const sampleWorkouts = {
-      upperbody: {
-        chest: {
-          low: { name: 'Push-up', calories: 50 },
-          medium: { name: 'Incline Push-up', calories: 70 },
-          high: { name: 'Barbell Chest Press', calories: 100 }
-        },
-        arms: {
-          low: { name: 'Dumbbell Curls', calories: 60 },
-          medium: { name: 'Hammer Curls', calories: 80 },
-          high: { name: 'Barbell Curls', calories: 90 }
-        }
-      },
-      cardio: {
-        core: {
-          low: { name: 'Walking', calories: 60 },
-          medium: { name: 'Jogging', calories: 120 },
-          high: { name: 'HIIT', calories: 150 }
-        },
-        running: {
-          low: { name: 'Slow Jogging', calories: 100 },
-          medium: { name: 'Moderate Jogging', calories: 150 },
-          high: { name: 'Sprinting', calories: 200 }
-        },
-        cycling: {
-          low: { name: 'Leisure Cycling', calories: 80 },
-          medium: { name: 'Moderate Cycling', calories: 130 },
-          high: { name: 'High-Intensity Cycling', calories: 180 }
-        }
-      },
-      lowerbody: {
-        legs: {
-          low: { name: 'Bodyweight Squats', calories: 50 },
-          medium: { name: 'Lunges', calories: 80 },
-          high: { name: 'Barbell Squats', calories: 120 }
-        }
-      }
-    };
-
-    // Return the workout data based on selected options
-    return [sampleWorkouts[type][muscleGroup][intensity]];
-  }
-
-  function displayFilteredWorkouts(workouts) {
-    const workoutsList = document.getElementById('workoutsList');
-    workoutsList.innerHTML = '';
-
-    workouts.forEach((workout) => {
-      const li = document.createElement('li');
-      li.classList.add('workout-item');
-      li.innerHTML = `
-        <span>${workout.name} (${workout.calories} Calories)</span>
-        <button onclick="addWorkout('${workout.name}', ${workout.calories})">Add</button>
-      `;
-      workoutsList.appendChild(li);
-    });
-  }
-
-  function addWorkout(workoutName, calories) {
-    const addedWorkoutsList = document.getElementById('addedWorkoutsList');
-    const li = document.createElement('li');
-    li.innerHTML = `
-      ${workoutName} (${calories} Calories)
-      <button onclick="removeWorkout(this, ${calories})">Remove</button>
-    `;
-    addedWorkoutsList.appendChild(li);
-
-    // Update total calories
-    updateCalorieCounter(calories);
-  }
-
-  function updateCalorieCounter(change) {
-    const calorieCounter = document.getElementById('calorieCounter');
-    let currentCalories = parseInt(calorieCounter.textContent) || 0;
-    currentCalories += change;
-    calorieCounter.textContent = currentCalories;
-  }
-
-  function removeWorkout(button, calories) {
-    const workoutItem = button.parentElement;
-    workoutItem.remove();
-    updateCalorieCounter(-calories);
-  }
-
-
+/* BMI CHART */
+function renderChart(){
+  const ctx=document.getElementById("bmiChart");
+  const labels=bmiHistory.map(x=>x.date);
+  const data=bmiHistory.map(x=>x.bmi);
+  new Chart(ctx,{
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"BMI",
+        data,
+        borderColor:"rgba(75,192,192,1)",
+        backgroundColor:"rgba(75,192,192,0.2)",
+        fill:true
+      }]
+    },
+    options:{responsive:true}
+  });
+}
+renderChart();
 </script>
 
 </body>
