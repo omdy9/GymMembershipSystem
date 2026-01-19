@@ -203,6 +203,82 @@
   padding: 5px;
   border-radius: 5px;
 }
+
+/* ================= MOBILE RESPONSIVENESS (ADDED ONLY) ================= */
+
+@media (max-width: 1024px) {
+  .container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .container .card {
+    width: 45%;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    margin-top: 80px;
+  }
+
+  .hamburger {
+    position: fixed;
+  }
+
+  .navbar {
+    width: 220px;
+    transform: translateX(-220px);
+  }
+
+  .main-content.shifted {
+    margin-left: 220px;
+  }
+
+  .attendance-buttons {
+    padding-top: 0; /* override huge padding without touching original */
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .attendance-buttons .btn {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .container .card {
+    width: 100%;
+  }
+
+  .slideshow-container {
+    margin: 20px auto;
+  }
+
+  .mySlides {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    width: 200px;
+    transform: translateX(-200px);
+  }
+
+  .main-content.shifted {
+    margin-left: 200px;
+  }
+
+  .about-us h2 {
+    font-size: 2rem;
+  }
+
+  .about-us p {
+    font-size: 1rem;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -403,9 +479,59 @@ window.onload = function() {
         document.getElementById("user-greeting").innerHTML = `<h2>Welcome, ${user.fullName}</h2><button onclick="logout()">Logout</button>`;
       }
     }
+/* ================= ATTENDANCE SYSTEM (ADDED ONLY) ================= */
 
+// Load attendance from localStorage on page load
+let savedAttendance = localStorage.getItem("attendanceData");
+if (savedAttendance) {
+  attendanceData = JSON.parse(savedAttendance);
+}
+
+// Persist attendance every time it changes
+function saveAttendance() {
+  localStorage.setItem("attendanceData", JSON.stringify(attendanceData));
+}
+
+// Override toggleClock safely (without breaking existing logic)
+const originalToggleClock = toggleClock;
+toggleClock = function () {
+  originalToggleClock();
+  saveAttendance();
+};
+
+// Enhance calendar rendering to show Present / Absent clearly
+function viewAttendance() {
+  const calendar = document.getElementById('calendar');
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  let calendarHtml = '<table border="1" cellspacing="0" cellpadding="5"><tr>';
+
+  for (let i = 1; i <= totalDays; i++) {
+    const date = `${currentYear}-${(currentMonth + 1)
+      .toString()
+      .padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
+
+    let className = '';
+    if (attendanceData[date] && attendanceData[date].status === 'Present') {
+      className = 'present';
+    } else if (attendanceData[date]) {
+      className = 'absent';
+    }
+
+    calendarHtml += `<td class="${className}">${i}</td>`;
+
+    if (i % 7 === 0) calendarHtml += '</tr><tr>';
+  }
+
+  calendarHtml += '</tr></table>';
+  calendar.innerHTML = calendarHtml;
+}
    
   </script>
 
 </body>
 </html>
+
