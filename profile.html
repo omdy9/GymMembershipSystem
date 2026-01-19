@@ -102,6 +102,63 @@ input, select {
 @media(max-width:768px){
   .container { width:90% }
 }
+
+/* ===== PROFILE LAYOUT FIX (SAFE OVERRIDES) ===== */
+
+/* Keep same background, just fix spacing */
+.container {
+    width: 60%;
+    margin: 40px auto 40px auto;   /* BELOW LOGO */
+    padding: 20px;
+}
+
+/* Logo spacing */
+.logo-container {
+    margin-top: 80px;
+    margin-bottom: 20px;
+}
+
+/* Prevent content going behind navbar */
+body {
+    margin-top: 0;
+}
+
+/* Mobile & Tablet */
+@media (max-width: 1024px) {
+    .container {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 92%;
+        margin-top: 30px;
+    }
+
+    .logo-container {
+        margin-top: 60px;
+    }
+
+    .membership-status {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    input, select {
+        font-size: 14px;
+    }
+}
+
 </style>
 </head>
 
@@ -222,3 +279,4 @@ function updateProfile(){
 
 </body>
 </html>
+
