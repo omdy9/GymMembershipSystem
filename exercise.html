@@ -157,14 +157,31 @@ button:hover { background:#cc0000 }
 <canvas id="bmiChart"></canvas>
 </div>
 
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-/* NAVBAR */
+/* ================= SUPABASE SETUP ================= */
+const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  window.location.href = "index.html";
+}
+
+/* ================= NAVBAR ================= */
 function toggleNavbar(){
   navbar.style.left = navbar.style.left==="0px" ? "-250px" : "0px";
 }
 
-/* EXERCISES */
-let selected = JSON.parse(localStorage.getItem("selectedExercises")) || [];
+/* ================= EXERCISES ================= */
+let selected = [];
 
 function renderSelected(){
   selectedExercises.innerHTML="";
@@ -176,68 +193,123 @@ function renderSelected(){
       </div>`;
   });
 }
-renderSelected();
 
 function addExercise(){
   if(!exerciseSelect.value) return;
   const [name,cal]=exerciseSelect.value.split("|");
-  selected.push({name,cal:Number(cal)});
-  localStorage.setItem("selectedExercises",JSON.stringify(selected));
+  selected.push({ name, cal:Number(cal) });
   renderSelected();
 }
 
 function removeExercise(i){
   selected.splice(i,1);
-  localStorage.setItem("selectedExercises",JSON.stringify(selected));
   renderSelected();
 }
 
-function saveWorkout(){
-  let workouts=JSON.parse(localStorage.getItem("workouts"))||[];
-  workouts.push({date:new Date().toISOString(), exercises:selected});
-  localStorage.setItem("workouts",JSON.stringify(workouts));
-  selected=[];
-  localStorage.removeItem("selectedExercises");
+async function saveWorkout(){
+  if(selected.length === 0){
+    alert("No exercises selected");
+    return;
+  }
+
+  // 1️⃣ Create workout
+  const { data: workout, error } = await supabase
+    .from("custom_workouts")
+    .insert({
+      uid: user.uid,
+      workout_date: new Date().toISOString()
+    })
+    .select()
+    .single();
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  // 2️⃣ Save exercises
+  const logs = selected.map(e => ({
+    workout_id: workout.id,
+    uid: user.uid,
+    exercise_name: e.name,
+    calories: e.cal
+  }));
+
+  const { error: logError } = await supabase
+    .from("exercise_logs")
+    .insert(logs);
+
+  if(logError){
+    alert(logError.message);
+    return;
+  }
+
+  selected = [];
   renderSelected();
   alert("Workout Saved!");
 }
 
-/* BMI */
-let bmiHistory = JSON.parse(localStorage.getItem("bmiHistory")) || [];
-
-function calculateBMI(){
+/* ================= BMI ================= */
+async function calculateBMI(){
   const h=parseFloat(height.value);
   const w=parseFloat(weight.value);
   if(!h||!w) return;
+
   const bmi=(w/(h*h)).toFixed(2);
-  bmiHistory.push({date:new Date().toLocaleDateString(), bmi});
-  localStorage.setItem("bmiHistory",JSON.stringify(bmiHistory));
-  renderChart();
-  alert("Your BMI: "+bmi);
+
+  const { error } = await supabase
+    .from("bmi_records")
+    .insert({
+      uid: user.uid,
+      bmi,
+      recorded_at: new Date().toISOString()
+    });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert("Your BMI: " + bmi);
+  loadBMIChart();
 }
 
-/* BMI CHART */
-function renderChart(){
+/* ================= BMI CHART ================= */
+async function loadBMIChart(){
+  const { data, error } = await supabase
+    .from("bmi_records")
+    .select("bmi, recorded_at")
+    .eq("uid", user.uid)
+    .order("recorded_at", { ascending: true });
+
+  if(error) return;
+
+  const labels = data.map(d =>
+    new Date(d.recorded_at).toLocaleDateString()
+  );
+  const values = data.map(d => d.bmi);
+
   const ctx=document.getElementById("bmiChart");
-  const labels=bmiHistory.map(x=>x.date);
-  const data=bmiHistory.map(x=>x.bmi);
+
   new Chart(ctx,{
     type:"line",
     data:{
       labels,
       datasets:[{
         label:"BMI",
-        data,
+        data:values,
         borderColor:"rgba(75,192,192,1)",
         backgroundColor:"rgba(75,192,192,0.2)",
         fill:true
       }]
     },
-    options:{responsive:true}
+    options:{ responsive:true }
   });
 }
-renderChart();
+
+loadBMIChart();
 </script>
 
 </body>
 </html>
+
