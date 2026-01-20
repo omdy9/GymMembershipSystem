@@ -218,65 +218,154 @@ body {
 </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-/* NAVBAR */
+/* ================= SUPABASE SETUP ================= */
+const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* ================= NAVBAR ================= */
 function toggleNavbar(){
   const nav=document.getElementById("navbar");
   nav.style.left = nav.style.left==="0px" ? "-250px" : "0px";
 }
 
-/* MOCK USER */
-const user = JSON.parse(localStorage.getItem("user")) || {
-  fullname:"John Doe",
-  username:"johndoe",
-  email:"john@example.com",
-  membership:"Active",
-  membershipType:"Gold"
-};
-
-document.getElementById("fullnameDisplay").innerText=user.fullname;
-document.getElementById("usernameDisplay").innerText=user.username;
-document.getElementById("emailDisplay").innerText=user.email;
-document.getElementById("navUser").innerText=`Welcome, ${user.username}!`;
-
-const status=document.getElementById("membershipStatus");
-status.innerText = user.membership==="Active"
-  ? "Your membership is active."
-  : "Your membership has expired.";
-status.classList.add(user.membership==="Active"?"active":"expired");
-document.getElementById("membershipType").innerText=user.membershipType;
-
-/* PROFILE */
-let profile = JSON.parse(localStorage.getItem("profile")) || {};
-
-function loadProfile(){
-  address.value=profile.address||"";
-  phone.value=profile.phone||"";
-  gender.value=profile.gender||"Male";
-  height.value=profile.height||"";
-  weight.value=profile.weight||"";
+/* ================= AUTH USER ================= */
+const userSession = JSON.parse(localStorage.getItem("user"));
+if (!userSession) {
+  window.location.href = "index.html";
 }
-loadProfile();
 
-function saveProfile(e){
+const uid = userSession.uid;
+
+/* ================= LOAD USER ================= */
+async function loadUser() {
+  const { data, error } = await supabase
+    .from("users")
+    .select("fullname, username, email")
+    .eq("uid", uid)
+    .single();
+
+  if (error) return alert(error.message);
+
+  fullnameDisplay.innerText = data.fullname;
+  usernameDisplay.innerText = data.username;
+  emailDisplay.innerText = data.email;
+  navUser.innerText = `Welcome, ${data.username}!`;
+}
+
+/* ================= MEMBERSHIP ================= */
+async function loadMembership() {
+  const { data } = await supabase
+    .from("memberships")
+    .select("membership_status, membership_type, expiry_date")
+    .eq("uid", uid)
+    .single();
+
+  const statusBox = document.getElementById("membershipStatus");
+
+  if (!data) {
+    statusBox.innerText = "No active membership found.";
+    statusBox.classList.add("expired");
+    membershipType.innerText = "-";
+    return;
+  }
+
+  const expired = new Date(data.expiry_date) < new Date();
+  const status = expired ? "Expired" : "Active";
+
+  statusBox.innerText =
+    status === "Active"
+      ? "Your membership is active."
+      : "Your membership has expired.";
+
+  statusBox.classList.add(status === "Active" ? "active" : "expired");
+  membershipType.innerText = data.membership_type;
+}
+
+/* ================= PROFILE ================= */
+async function loadProfile() {
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("uid", uid)
+    .single();
+
+  if (!data) return;
+
+  address.value = data.address || "";
+  phone.value = data.phone_number || "";
+  gender.value = data.gender || "Male";
+  height.value = data.height || "";
+  weight.value = data.weight || "";
+}
+
+/* ================= SAVE PROFILE ================= */
+async function saveProfile(e){
   e.preventDefault();
-  profile={
-    address:address.value,
-    phone:phone.value,
-    gender:gender.value,
-    height:height.value,
-    weight:weight.value
+
+  const payload = {
+    uid,
+    address: address.value,
+    phone_number: phone.value,
+    gender: gender.value,
+    height: height.value,
+    weight: weight.value,
+    bmi: height.value && weight.value
+      ? (weight.value / ((height.value/100) ** 2)).toFixed(1)
+      : null
   };
-  localStorage.setItem("profile",JSON.stringify(profile));
+
+  const { error } = await supabase
+    .from("profiles")
+    .insert(payload);
+
+  if (error && !error.message.includes("duplicate")) {
+    alert(error.message);
+    return;
+  }
+
   alert("Profile saved successfully!");
 }
 
-function updateProfile(){
-  saveProfile(new Event("submit"));
+/* ================= UPDATE PROFILE ================= */
+async function updateProfile(){
+  const payload = {
+    address: address.value,
+    phone_number: phone.value,
+    gender: gender.value,
+    height: height.value,
+    weight: weight.value,
+    bmi: height.value && weight.value
+      ? (weight.value / ((height.value/100) ** 2)).toFixed(1)
+      : null
+  };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update(payload)
+    .eq("uid", uid);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
   alert("Profile updated successfully!");
 }
-</script>
 
+/* ================= INIT ================= */
+loadUser();
+loadMembership();
+loadProfile();
+</script>
 </body>
 </html>
+
 
