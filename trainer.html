@@ -76,118 +76,69 @@ li {
 <div id="workoutList"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ---------- DEMO DATA ---------- */
-let users = JSON.parse(localStorage.getItem("users")) || [
-  {uid:1, fullname:"John Doe"},
-  {uid:2, fullname:"Jane Smith"}
-];
+const supabase = supabase.createClient(
+  "https://mcvfdjrbcwnfhrsuquil.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jdmZkanJiY3duZmhyc3VxdWlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDg3MjgsImV4cCI6MjA4NDQ4NDcyOH0.HB-SFOE_XuZKXMn7gVzsO8EY9rgPpW9ws3m-QVS0lmI"
+);
 
-let bmiHistoryByUser = JSON.parse(localStorage.getItem("bmiHistoryByUser")) || {
-  1:[
-    {date:"2024-01-01", bmi:24.1},
-    {date:"2024-02-01", bmi:23.6}
-  ],
-  2:[
-    {date:"2024-01-01", bmi:27.2}
-  ]
-};
-
-let workoutsByUser = JSON.parse(localStorage.getItem("workoutsByUser")) || {
-  1:[
-    {
-      workout_name:"Custom Workout 1",
-      exercises:[
-        {name:"Running", muscle:"Legs", intensity:"High", calories:300},
-        {name:"Push Ups", muscle:"Chest", intensity:"Medium", calories:100}
-      ]
-    }
-  ],
-  2:[]
-};
-
-localStorage.setItem("users", JSON.stringify(users));
-localStorage.setItem("bmiHistoryByUser", JSON.stringify(bmiHistoryByUser));
-localStorage.setItem("workoutsByUser", JSON.stringify(workoutsByUser));
-
-/* ---------- USER DROPDOWN ---------- */
-const userSelect = document.getElementById("userSelect");
-users.forEach(u=>{
-  userSelect.innerHTML+=`<option value="${u.uid}">${u.fullname}</option>`;
-});
-
-/* ---------- LOAD USER DATA ---------- */
-let chart;
-function loadUserData(){
-  const uid = userSelect.value;
-  renderBMI(uid);
-  renderWorkouts(uid);
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user || user.role!=="trainer"){
+  alert("Unauthorized");
+  location.href="index.html";
 }
 
-/* ---------- BMI CHART ---------- */
-function renderBMI(uid){
-  const bmiData = bmiHistoryByUser[uid];
-  const ctx = document.getElementById("bmiChart").getContext("2d");
-  document.getElementById("noBmi").innerText="";
+/* LOAD USERS */
+async function loadUsers(){
+  const { data } = await supabase.from("users").select("uid,fullname");
+  userSelect.innerHTML="";
+  data.forEach(u=>{
+    userSelect.innerHTML+=`<option value="${u.uid}">${u.fullname}</option>`;
+  });
+}
 
-  if(chart) chart.destroy();
+/* LOAD BMI */
+async function loadBMI(uid){
+  const { data } = await supabase
+    .from("bmi_records")
+    .select("*")
+    .eq("uid",uid)
+    .order("recorded_at");
 
-  if(!bmiData || bmiData.length===0){
-    document.getElementById("noBmi").innerText="No BMI history available.";
-    return;
-  }
+  const labels=data.map(d=>new Date(d.recorded_at).toLocaleDateString());
+  const values=data.map(d=>d.bmi);
 
-  chart = new Chart(ctx,{
+  new Chart(bmiChart,{
     type:"line",
-    data:{
-      labels:bmiData.map(x=>x.date),
-      datasets:[{
-        label:"BMI",
-        data:bmiData.map(x=>x.bmi),
-        borderColor:"rgba(75,192,192,1)",
-        backgroundColor:"rgba(75,192,192,0.2)",
-        fill:true
-      }]
-    },
-    options:{
-      responsive:true,
-      scales:{
-        x:{title:{display:true,text:"Date"}},
-        y:{title:{display:true,text:"BMI"}}
-      }
-    }
+    data:{labels,datasets:[{label:"BMI",data:values}]},
+    options:{responsive:true}
   });
 }
 
-/* ---------- WORKOUT LIST ---------- */
-function renderWorkouts(uid){
-  const list = document.getElementById("workoutList");
-  list.innerHTML="";
-  const workouts = workoutsByUser[uid];
+/* LOAD WORKOUTS */
+async function loadWorkouts(uid){
+  const { data } = await supabase
+    .from("custom_workouts")
+    .select("*, exercise_logs(*)")
+    .eq("uid",uid);
 
-  if(!workouts || workouts.length===0){
-    list.innerHTML="<p>No custom workouts for this user.</p>";
-    return;
-  }
-
-  workouts.forEach(w=>{
-    let html = `<li><h3>${w.workout_name}</h3>`;
-    w.exercises.forEach(e=>{
-      html+=`
-      <div class="exercise">
-        Exercise: ${e.name}<br>
-        Muscle Group: ${e.muscle}<br>
-        Intensity: ${e.intensity}<br>
-        Calories: ${e.calories}
-      </div>`;
+  workoutList.innerHTML="";
+  data.forEach(w=>{
+    workoutList.innerHTML+=`<h3>${w.workout_date}</h3>`;
+    w.exercise_logs.forEach(e=>{
+      workoutList.innerHTML+=`<p>${e.exercise_name} - ${e.calories} cal</p>`;
     });
-    html+="</li>";
-    list.innerHTML+=html;
   });
 }
 
-/* INITIAL LOAD */
-loadUserData();
+function viewUser(){
+  const uid=userSelect.value;
+  loadBMI(uid);
+  loadWorkouts(uid);
+}
+
+loadUsers();
 </script>
 
 </body>
