@@ -117,102 +117,79 @@ th {
 </table>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* MOCK DATA */
-let users = JSON.parse(localStorage.getItem("users")) || [
-    {uid:1, fullname:"John Doe", username:"john", email:"john@mail.com"},
-    {uid:2, fullname:"Jane Smith", username:"jane", email:"jane@mail.com"}
-];
+const supabase = supabase.createClient(
+  "https://YOUR_PROJECT_ID.supabase.co",
+  "YOUR_ANON_KEY"
+);
 
-let memberships = JSON.parse(localStorage.getItem("memberships")) || [
-    {id:1, uid:1, fullname:"John Doe", username:"john", status:"Active", type:"gold", expiry:"2026-01-01"},
-    {id:2, uid:2, fullname:"Jane Smith", username:"jane", status:"Expired", type:"normal", expiry:"2024-05-01"}
-];
-
-function saveData(){
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("memberships", JSON.stringify(memberships));
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user || user.role !== "admin"){
+  alert("Unauthorized");
+  location.href="index.html";
 }
 
-/* RENDER USERS */
-function renderUsers(){
-    usersTable.innerHTML="";
-    users.forEach(u=>{
-        usersTable.innerHTML+=`
-        <tr>
-            <td>${u.uid}</td>
-            <td>${u.fullname}</td>
-            <td>${u.username}</td>
-            <td>${u.email}</td>
-            <td>
-                <form onsubmit="updateUser(event,${u.uid})" class="form-inline">
-                    <input value="${u.fullname}" required>
-                    <input value="${u.username}" required>
-                    <input type="email" value="${u.email}" required>
-                    <button class="btn">Update</button>
-                </form>
-            </td>
-        </tr>`;
-    });
+/* LOAD USERS */
+async function loadUsers(){
+  const { data } = await supabase.from("users").select("*");
+  usersTable.innerHTML="";
+  data.forEach(u=>{
+    usersTable.innerHTML+=`
+      <tr>
+        <td>${u.uid}</td>
+        <td><input value="${u.fullname}" onchange="updateUser('${u.uid}',this.value,'fullname')"></td>
+        <td><input value="${u.username}" onchange="updateUser('${u.uid}',this.value,'username')"></td>
+        <td><input value="${u.email}" onchange="updateUser('${u.uid}',this.value,'email')"></td>
+      </tr>`;
+  });
 }
 
 /* UPDATE USER */
-function updateUser(e,uid){
-    e.preventDefault();
-    let inputs=e.target.querySelectorAll("input");
-    let user=users.find(u=>u.uid===uid);
-    user.fullname=inputs[0].value;
-    user.username=inputs[1].value;
-    user.email=inputs[2].value;
-    saveData();
-    alert("User updated");
+async function updateUser(uid,value,field){
+  await supabase.from("users").update({[field]:value}).eq("uid",uid);
 }
 
-/* RENDER MEMBERSHIPS */
-function renderMemberships(){
-    membershipTable.innerHTML="";
-    memberships.forEach(m=>{
-        membershipTable.innerHTML+=`
-        <tr>
-            <td>${m.id}</td>
-            <td>${m.fullname}</td>
-            <td>${m.username}</td>
-            <td>${m.status}</td>
-            <td>${m.type}</td>
-            <td>${m.expiry}</td>
-            <td>
-                <form onsubmit="updateMembership(event,${m.id})" class="form-inline">
-                    <select>
-                        <option ${m.status==="Active"?"selected":""}>Active</option>
-                        <option ${m.status==="Expired"?"selected":""}>Expired</option>
-                        <option ${m.status==="Pending"?"selected":""}>Pending</option>
-                    </select>
-                    <select>
-                        <option ${m.type==="normal"?"selected":""}>normal</option>
-                        <option ${m.type==="gold"?"selected":""}>gold</option>
-                    </select>
-                    <input type="date" value="${m.expiry}">
-                    <button class="btn">Update</button>
-                </form>
-            </td>
-        </tr>`;
-    });
+/* LOAD MEMBERSHIPS */
+async function loadMemberships(){
+  const { data } = await supabase
+    .from("memberships")
+    .select("*, users(fullname,username)");
+
+  membershipTable.innerHTML="";
+  data.forEach(m=>{
+    membershipTable.innerHTML+=`
+      <tr>
+        <td>${m.id}</td>
+        <td>${m.users.fullname}</td>
+        <td>${m.users.username}</td>
+        <td>
+          <select onchange="updateMembership(${m.id},this.value,'membership_status')">
+            <option ${m.membership_status==="Active"?"selected":""}>Active</option>
+            <option ${m.membership_status==="Expired"?"selected":""}>Expired</option>
+            <option ${m.membership_status==="Pending"?"selected":""}>Pending</option>
+          </select>
+        </td>
+        <td>
+          <select onchange="updateMembership(${m.id},this.value,'membership_type')">
+            <option ${m.membership_type==="normal"?"selected":""}>normal</option>
+            <option ${m.membership_type==="gold"?"selected":""}>gold</option>
+          </select>
+        </td>
+        <td>
+          <input type="date" value="${m.expiry_date}" 
+          onchange="updateMembership(${m.id},this.value,'expiry_date')">
+        </td>
+      </tr>`;
+  });
 }
 
-/* UPDATE MEMBERSHIP */
-function updateMembership(e,id){
-    e.preventDefault();
-    let inputs=e.target.querySelectorAll("select,input");
-    let mem=memberships.find(m=>m.id===id);
-    mem.status=inputs[0].value;
-    mem.type=inputs[1].value;
-    mem.expiry=inputs[2].value;
-    saveData();
-    alert("Membership updated");
+async function updateMembership(id,value,field){
+  await supabase.from("memberships").update({[field]:value}).eq("id",id);
 }
 
-renderUsers();
-renderMemberships();
+loadUsers();
+loadMemberships();
 </script>
 
 </body>
