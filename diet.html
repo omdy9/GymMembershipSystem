@@ -205,51 +205,64 @@ tbody {
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* NAVBAR */
-function toggleNavbar(){
-    const nav=document.getElementById("navbar");
-    const main=document.querySelector(".main-content");
-    nav.style.left = nav.style.left==="0px" ? "-250px" : "0px";
-    main.classList.toggle("shifted");
+const SUPABASE_URL = "https://mcvfdjrbcwnfhrsuquil.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jdmZkanJiY3duZmhyc3VxdWlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDg3MjgsImV4cCI6MjA4NDQ4NDcyOH0.HB-SFOE_XuZKXMn7gVzsO8EY9rgPpW9ws3m-QVS0lmI";
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) location.href = "index.html";
+
+/* ADD DIET */
+async function addDiet(e){
+  e.preventDefault();
+
+  const payload = {
+    uid: user.uid,
+    meal_type: meal_type.value,
+    food_item: food_item.value,
+    calories: calories.value,
+    protein: protein.value,
+    carbs: carbs.value,
+    fats: fats.value,
+    date: date.value
+  };
+
+  const { error } = await supabase.from("diet_logs").insert(payload);
+  if(error) return alert(error.message);
+
+  alert("Diet record added");
+  loadDiet();
 }
 
-/* DIET LOGIC */
-let diets = JSON.parse(localStorage.getItem("diets")) || [];
+/* LOAD DIET */
+async function loadDiet(){
+  const { data } = await supabase
+    .from("diet_logs")
+    .select("*")
+    .eq("uid", user.uid)
+    .order("date", { ascending:false });
 
-function addDiet(e){
-    e.preventDefault();
-    diets.unshift({
-        date: date.value,
-        meal: meal_type.value,
-        food: food_item.value,
-        calories: calories.value,
-        protein: protein.value,
-        carbs: carbs.value,
-        fats: fats.value
-    });
-    localStorage.setItem("diets", JSON.stringify(diets));
-    e.target.reset();
-    renderTable();
+  tbody.innerHTML="";
+  data.forEach(d=>{
+    tbody.innerHTML += `
+      <tr>
+        <td>${d.date}</td>
+        <td>${d.meal_type}</td>
+        <td>${d.food_item}</td>
+        <td>${d.calories}</td>
+        <td>${d.protein}</td>
+        <td>${d.carbs}</td>
+        <td>${d.fats}</td>
+      </tr>`;
+  });
 }
 
-function renderTable(){
-    dietTable.innerHTML="";
-    diets.forEach(d=>{
-        dietTable.innerHTML += `
-        <tr>
-            <td>${d.date}</td>
-            <td>${d.meal}</td>
-            <td>${d.food}</td>
-            <td>${d.calories}</td>
-            <td>${d.protein}</td>
-            <td>${d.carbs}</td>
-            <td>${d.fats}</td>
-        </tr>`;
-    });
-}
-renderTable();
+loadDiet();
 </script>
+
 
 </body>
 </html>
+
