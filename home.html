@@ -412,127 +412,118 @@ function toggleNavbar() {
 let attendanceData = {};
 let isClockedIn = false; // Keeps track of whether the user is clocked in or not
 
-function toggleClock() {
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ================= SUPABASE SETUP ================= */
+const SUPABASE_URL = "https://mcvfdjrbcwnfhrsuquil.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1jdmZkanJiY3duZmhyc3VxdWlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MDg3MjgsImV4cCI6MjA4NDQ4NDcyOH0.HB-SFOE_XuZKXMn7gVzsO8EY9rgPpW9ws3m-QVS0lmI";
+
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  window.location.href = "index.html";
+}
+
+let isClockedIn = false;
+
+/* ================= CLOCK IN / CLOCK OUT ================= */
+async function toggleClock() {
   const button = document.getElementById("clockButton");
-  const date = new Date().toISOString().split('T')[0]; // Get current date
+  const today = new Date().toISOString().split("T")[0];
+  const timeNow = new Date().toLocaleTimeString();
 
-  if (isClockedIn) {
-    // Clock Out
-    if (attendanceData[date] && attendanceData[date].clockIn) {
-      attendanceData[date].clockOut = new Date().toLocaleTimeString();
-      attendanceData[date].status = 'Present';
-      button.innerText = 'Clock In';
-      alert('Clocked Out at ' + attendanceData[date].clockOut);
-    } else {
-      alert('Please clock in first.');
+  // Check existing attendance for today
+  const { data: existing, error } = await supabase
+    .from("attendance")
+    .select("*")
+    .eq("uid", user.uid)
+    .eq("date", today)
+    .single();
+
+  // CLOCK IN
+  if (!existing) {
+    const { error } = await supabase.from("attendance").insert({
+      uid: user.uid,
+      date: today,
+      clock_in: timeNow,
+      status: "Present"
+    });
+
+    if (error) {
+      alert(error.message);
+      return;
     }
-  } else {
-    // Clock In
-    attendanceData[date] = { clockIn: new Date().toLocaleTimeString(), clockOut: null, status: null };
-    button.innerText = 'Clock Out';
-    alert('Clocked In at ' + attendanceData[date].clockIn);
+
+    isClockedIn = true;
+    button.innerText = "Clock Out";
+    alert("Clocked In at " + timeNow);
+    return;
   }
 
-  // Toggle the clocked-in state
-  isClockedIn = !isClockedIn;
-}
+  // CLOCK OUT
+  if (existing && !existing.clock_out) {
+    const { error } = await supabase
+      .from("attendance")
+      .update({ clock_out: timeNow })
+      .eq("id", existing.id);
 
-// Toggle View Attendance Dropdown
-function toggleDropdown() {
-  const dropdownContent = document.getElementById("attendanceDropdown");
-  const calendarContainer = document.getElementById('calendarContainer');
-
-  // Toggle display of dropdown content
-  dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-  if (dropdownContent.style.display === "block") {
-    // Show calendar when dropdown is expanded
-    calendarContainer.style.display = 'block';
-    viewAttendance(); // Generate calendar data when dropdown is shown
-  } else {
-    calendarContainer.style.display = 'none'; // Hide calendar when dropdown is collapsed
-  }
-}
-
-function viewAttendance() {
-  const calendar = document.getElementById('calendar');
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate(); // Total days in current month
-
-  // Generate the calendar days
-  let calendarHtml = '<table border="1" cellspacing="0" cellpadding="5"><tr>';
-  for (let i = 1; i <= totalDays; i++) {
-    const date = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
-    const attendanceStatus = attendanceData[date] ? attendanceData[date].status : null;
-    const className = attendanceStatus === 'Present' ? 'present' : (attendanceStatus === 'Absent' ? 'absent' : '');
-    calendarHtml += `<td class="${className}">${i}</td>`;
-    if (i % 7 === 0) calendarHtml += '</tr><tr>';
-  }
-  calendarHtml += '</tr></table>';
-  calendar.innerHTML = calendarHtml;
-}
-window.onload = function() {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (user) {
-        document.getElementById("user-greeting").innerHTML = `<h2>Welcome, ${user.fullName}</h2><button onclick="logout()">Logout</button>`;
-      }
+    if (error) {
+      alert(error.message);
+      return;
     }
-/* ================= ATTENDANCE SYSTEM (ADDED ONLY) ================= */
 
-// Load attendance from localStorage on page load
-let savedAttendance = localStorage.getItem("attendanceData");
-if (savedAttendance) {
-  attendanceData = JSON.parse(savedAttendance);
+    isClockedIn = false;
+    button.innerText = "Clock In";
+    alert("Clocked Out at " + timeNow);
+  }
 }
 
-// Persist attendance every time it changes
-function saveAttendance() {
-  localStorage.setItem("attendanceData", JSON.stringify(attendanceData));
-}
+/* ================= VIEW ATTENDANCE ================= */
+async function viewAttendance() {
+  const calendar = document.getElementById("calendar");
+  calendar.innerHTML = "";
 
-// Override toggleClock safely (without breaking existing logic)
-const originalToggleClock = toggleClock;
-toggleClock = function () {
-  originalToggleClock();
-  saveAttendance();
-};
+  const { data, error } = await supabase
+    .from("attendance")
+    .select("date, status")
+    .eq("uid", user.uid);
 
-// Enhance calendar rendering to show Present / Absent clearly
-function viewAttendance() {
-  const calendar = document.getElementById('calendar');
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+  if (error) {
+    alert(error.message);
+    return;
+  }
 
-  let calendarHtml = '<table border="1" cellspacing="0" cellpadding="5"><tr>';
+  const attendanceMap = {};
+  data.forEach(d => attendanceMap[d.date] = d.status);
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const totalDays = new Date(year, month + 1, 0).getDate();
+
+  let html = '<table border="1" cellspacing="0" cellpadding="5"><tr>';
 
   for (let i = 1; i <= totalDays; i++) {
-    const date = `${currentYear}-${(currentMonth + 1)
-      .toString()
-      .padStart(2, '0')}-${i.toString().padStart(2, '0')}`;
-
-    let className = '';
-    if (attendanceData[date] && attendanceData[date].status === 'Present') {
-      className = 'present';
-    } else if (attendanceData[date]) {
-      className = 'absent';
-    }
-
-    calendarHtml += `<td class="${className}">${i}</td>`;
-
-    if (i % 7 === 0) calendarHtml += '</tr><tr>';
+    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+    const cls = attendanceMap[date] === "Present" ? "present" : "";
+    html += `<td class="${cls}">${i}</td>`;
+    if (i % 7 === 0) html += '</tr><tr>';
   }
 
-  calendarHtml += '</tr></table>';
-  calendar.innerHTML = calendarHtml;
+  html += '</tr></table>';
+  calendar.innerHTML = html;
 }
-   
-  </script>
+</script>
 
 </body>
 </html>
+
 
 
 
