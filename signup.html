@@ -87,12 +87,14 @@ async function signup(e){
   const passwordInput = document.getElementById("password");
   const error = document.getElementById("error");
 
-  const email = emailInput.value;
-  const password = passwordInput.value;
-  const fullname = fullnameInput.value;
-  const username = usernameInput.value;
+  error.innerText = ""; // clear old errors
 
-  // 1. Create Auth user
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+  const fullname = fullnameInput.value.trim();
+  const username = usernameInput.value.trim();
+
+  /* 1️⃣ CREATE AUTH USER */
   const { data, error: authError } = await supabase.auth.signUp({
     email,
     password
@@ -103,7 +105,7 @@ async function signup(e){
     return;
   }
 
-  // 2. Insert into users table
+  /* 2️⃣ INSERT INTO USERS TABLE */
   const { error: insertError } = await supabase.from("users").insert({
     uid: data.user.id,
     fullname,
@@ -117,11 +119,13 @@ async function signup(e){
     return;
   }
 
-  alert("Signup successful!");
+  /* ✅ SUCCESS */
+  alert("✅ Signup successful! Please login.");
   window.location.href = "index.html";
 }
 </script>
 
 </body>
 </html>
+
 
